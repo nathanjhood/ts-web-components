@@ -3,6 +3,7 @@ import http = require('node:http');
 import fs = require('node:fs');
 import url = require('node:url');
 import util = require('node:util');
+import browsersList = require('browserslist');
 import esbuild = require('esbuild');
 import normalizePort = require('./scripts/utils/normalizePort');
 import getPaths = require('./scripts/utils/getPaths');
@@ -212,33 +213,132 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
   server.listen(parseInt(port, 10), hostname);
 };
 
-(async (proc: NodeJS.Process) => {
-  const paths = getPaths(proc);
-  copyPublicFolder({
-    appBuild: paths.projectBuild,
-    appHtml: paths.projectHtml,
-    appPublic: paths.projectPublic,
-  });
-
-  // Start esbuild's server on a random local port
-  const ctx = await esbuild.context({
-    // ... your build options go here ...
-    absWorkingDir: paths.projectPath,
-    publicPath: paths.projectPublic,
-    entryPoints: [paths.projectIndexJs],
-    outdir: paths.projectBuild,
-  });
-  // The return value tells us where esbuild's local server is
-  await ctx
-    .serve({
-      servedir: paths.projectBuild,
-    })
-    .then((result) => {
-      serve(proc, { port: result.port.toString(), host: result.host });
-      buildHtml(proc, {
-        appHtml: paths.projectHtml,
-        appBuild: paths.projectBuild,
-      });
-      return result;
+if (require.main === module) {
+  (async (proc: NodeJS.Process) => {
+    const paths = getPaths(proc);
+    const isEnvDevelopment: boolean = proc.env['NODE_ENV'] === 'development';
+    const isEnvProduction: boolean = proc.env['NODE_ENV'] === 'production';
+    const isEnvProductionProfile =
+      isEnvProduction && proc.argv.includes('--profile');
+    const supportedTargets = [
+      'chrome',
+      'deno',
+      'edge',
+      'firefox',
+      'hermes',
+      'ie',
+      'ios',
+      'node',
+      'opera',
+      'rhino',
+      'safari',
+    ];
+    const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
+    const useTypeScript: boolean = fs.existsSync(paths.projectTsConfig);
+    const wdsSocketPath = proc.env['WDS_SOCKET_PATH'] || '/esbuild';
+    const wdsSocketHost =
+      proc.env['WDS_SOCKET_HOST'] || 'window.location.hostname';
+    copyPublicFolder({
+      appBuild: paths.projectBuild,
+      appHtml: paths.projectHtml,
+      appPublic: paths.projectPublic,
     });
-})(global.process);
+
+    // Start esbuild's server on a random local port
+    const ctx = await esbuild.context({
+      // ... your build options go here ...
+      absWorkingDir: paths.projectPath,
+      publicPath: paths.projectPublic,
+      entryPoints: [paths.projectIndexJs],
+      outbase: paths.projectSrc,
+      outdir: paths.projectBuild,
+      tsconfig: paths.projectTsConfig,
+      format: 'esm',
+      platform: 'browser',
+      entryNames: 'static/[ext]/index',
+      chunkNames: 'static/[ext]/[name].chunk',
+      assetNames: 'static/media/[name]',
+      splitting: isEnvDevelopment,
+      target: browsersList(
+        isEnvProduction
+          ? ['>0.2%', 'not dead', 'not op_mini all']
+          : [
+              'last 1 chrome version',
+              'last 1 firefox version',
+              'last 1 safari version',
+            ]
+      )
+        .filter((testTarget) => {
+          const targetToTest = testTarget.split(' ')[0];
+          if (targetToTest && supportedTargets.includes(targetToTest))
+            return true;
+          return false;
+        })
+        .map<string>((browser) => {
+          return browser.replaceAll(' ', '');
+        }),
+      loader: {
+        // 'file' loaders will be prepending by 'publicPath',
+        // i.e., 'https://www.publicurl.com/icon.png'
+        '.jsx': 'jsx',
+        '.js': 'js',
+        '.tsx': 'tsx',
+        '.ts': 'ts',
+        '.svg': 'file',
+        '.png': 'file',
+        '.ico': 'file',
+      },
+      banner: {
+        // js: `new EventSource('/esbuild').addEventListener('change', () => location.reload(),{once:true});`,
+        js:
+          proc.env['FAST_REFRESH'] === 'false'
+            ? ''
+            : `new EventSource('${wdsSocketPath}').addEventListener('change', () => ${wdsSocketHost}.reload(),{once:true});`,
+      },
+      treeShaking: isEnvProduction,
+      minify: isEnvProduction,
+      sourcemap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+      color: proc.stdout.isTTY,
+      resolveExtensions: paths.moduleFileExtensions
+        .map((ext) => `.${ext}`)
+        .filter((ext) => useTypeScript || !ext.includes('ts')),
+      plugins: [
+        (() => {
+          return {
+            name: 'env',
+            setup(build) {
+              // Intercept import paths called "env" so esbuild doesn't attempt
+              // to map them to a file system location. Tag them with the "env-ns"
+              // namespace to reserve them for this plugin.
+              build.onResolve({ filter: /^env$/ }, (args) => ({
+                path: args.path,
+                namespace: 'env-ns',
+              }));
+
+              // Load paths tagged with the "env-ns" namespace and behave as if
+              // they point to a JSON file containing the environment variables.
+              build.onLoad({ filter: /.*/, namespace: 'env-ns' }, () => ({
+                contents: JSON.stringify(proc.env),
+                loader: 'json',
+              }));
+            },
+          };
+        })(),
+      ],
+      //
+    });
+    // The return value tells us where esbuild's local server is
+    await ctx
+      .serve({
+        servedir: paths.projectBuild,
+      })
+      .then((result) => {
+        serve(proc, { port: result.port.toString(), host: result.host });
+        buildHtml(proc, {
+          appHtml: paths.projectHtml,
+          appBuild: paths.projectBuild,
+        });
+        return result;
+      });
+  })(global.process);
+}

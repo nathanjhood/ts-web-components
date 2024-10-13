@@ -9,6 +9,7 @@
     "serve": "tsx HttpServer.ts",
     "css": "tailwindcss -i src/css/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs --watch",
     "type-check": "tsc --noEmit",
+    "gen:certs": "openssl req -x509 -newkey rsa:4096 -keyout app.key -out app.cert -days 9999 -nodes -subj /CN=127.0.0.1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check ./**/*.{js,jsx,ts,tsx,css,md,json} --config ./prettier.config.mjs",
@@ -39,5 +40,21 @@
     "tslib": "^2.7.0",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.8.1"
+  },
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=20"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

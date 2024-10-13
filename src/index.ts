@@ -20,15 +20,15 @@ class AppComponent extends HTMLElement {
     if (!shadowRoot) {
       throw new Error('Failed to attach a shadowRoot to new App Component()');
     } else {
-      shadowRoot.innerHTML = this.render();
+      shadowRoot.innerHTML = this.render('Your application goes here!');
     }
   }
   /**
    *
    * @returns
    */
-  private render(): string {
-    return `<slot></slot>`;
+  private render(innerHtml: string): string {
+    return `<slot>${innerHtml}</slot>`;
   }
   /**
    *

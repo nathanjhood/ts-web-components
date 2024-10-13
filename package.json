@@ -1,12 +1,11 @@
 {
-  "name": "web-components",
+  "name": "ts-web-components",
   "version": "1.0.0",
-  "main": "public/index.html",
   "license": "MIT",
   "private": true,
   "scripts": {
     "start": "npm-run-all --parallel css serve",
-    "serve": "tsx HttpServer.ts",
+    "serve": "tsx scripts/serve.ts",
     "css": "tailwindcss -i src/css/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs --watch",
     "type-check": "tsc --noEmit",
     "gen:certs": "openssl req -x509 -newkey rsa:4096 -keyout app.key -out app.cert -days 9999 -nodes -subj /CN=127.0.0.1",

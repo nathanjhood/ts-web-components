@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "tsconfig",
+  "compilerOptions": {
+    // from @tsconfig/node20
+    "target": "es2022",
+    "lib": ["DOM", "DOM.Iterable", "es2023"],
+    // taken from @tsconfig/strictest
+    "strict": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // taken from 'https://tsx.is/typescript'
+    // Treat files as modules even if it doesn't use import/export
+    "moduleDetection": "force",
+    // Ignore module structure
+    "module": "Preserve",
+    // Allow JSON modules to be imported
+    "resolveJsonModule": true,
+    // Allow JS files to be imported from TS and vice versa
+    "allowJs": true,
+    // Use correct ESM import behavior
+    "esModuleInterop": true,
+    // Disallow features that require cross-file awareness
+    "isolatedModules": true,
+    // recommended
+    "verbatimModuleSyntax": true,
+    // library code needs special considerations...
+    "skipLibCheck": false,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    // custom
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "tsBuildInfoFile": ".tsbuildinfo"
+  },
+  "include": [
+    "**/**/*.d.ts",
+    "lib",
+    "src",
+    "**/**/*.mjs",
+    "**/**/*.js",
+    "**/**/*.json",
+    "**/**/*.ts",
+    "HttpServer.ts"
+  ],
+  "exclude": [
+    "eslint.config.mjs",
+    "prettier.config.mjs",
+    "postcss.config.mjs",
+    "tailwind.config.mjs",
+    "node_modules",
+    "coverage",
+    "build",
+    "dist"
+  ]
+}

@@ -8,6 +8,7 @@ import esbuild = require('esbuild');
 import normalizePort = require('./scripts/utils/normalizePort');
 import getPaths = require('./scripts/utils/getPaths');
 import copyPublicFolder = require('./scripts/utils/copyPublicFolder');
+import buildHtml = require('./scripts/utils/buildHtml');
 
 const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
   // SHUTDOWN
@@ -225,6 +226,7 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
     appHtml: paths.projectHtml,
     appPublic: paths.projectPublic,
   });
+
   // Start esbuild's server on a random local port
   const ctx = await esbuild.context({
     // ... your build options go here ...
@@ -240,6 +242,10 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
     })
     .then((result) => {
       serve(proc, { port: result.port.toString(), host: result.host });
+      buildHtml(proc, {
+        appHtml: paths.projectHtml,
+        appBuild: paths.projectBuild,
+      });
       return result;
     });
 })(global.process);

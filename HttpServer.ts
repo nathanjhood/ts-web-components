@@ -3,7 +3,6 @@ import http = require('node:http');
 import fs = require('node:fs');
 import url = require('node:url');
 import util = require('node:util');
-import path = require('node:path');
 import esbuild = require('esbuild');
 import normalizePort = require('./scripts/utils/normalizePort');
 import getPaths = require('./scripts/utils/getPaths');
@@ -69,14 +68,16 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
   proc.on('SIGTERM', handleSigterm);
   proc.on('SIGINT', handleSigint);
 
-  if (proc.env['NODE_ENV'] === undefined) {
-    throw new Error(
-      "'NODE_ENV' should be set to one of: 'developent', 'production', or 'test'; but, it was 'undefined'"
-    );
-  }
-
   const warnings: Error[] = [];
   const errors: Error[] = [];
+
+  if (proc.env['NODE_ENV'] === undefined) {
+    warnings.push(
+      new Error(
+        "'NODE_ENV' should be set to one of: 'developent', 'production', or 'test'; but, it was 'undefined'"
+      )
+    );
+  }
 
   // CONSOLE
 
@@ -167,14 +168,6 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
       method: request.method,
       headers: request.headers,
     };
-    // response.writeHead(200, {
-    //   'Content-Type': 'application/json',
-    // });
-    // response.end(
-    //   JSON.stringify({
-    //     data: 'Hello World!',
-    //   })
-    // );
     // Forward each incoming request to esbuild
     const proxyRequest = http.request(options, (proxyResponse) => {
       // If esbuild returns "not found", send a custom 404 page

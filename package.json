@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "npm-run-all --parallel css serve",
-    "serve": "serve public",
+    "serve": "tsx HttpServer.ts",
     "css": "tailwindcss -i src/css/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs --watch",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",

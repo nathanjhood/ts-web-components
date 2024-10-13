@@ -22,6 +22,7 @@ class AppComponent extends HTMLElement {
     } else {
       shadowRoot.innerHTML = this.render();
     }
+    document.getElementById('root')?.appendChild(this);
   }
   /**
    *
@@ -71,3 +72,5 @@ class AppComponent extends HTMLElement {
 }
 
 export = AppComponent;
+
+window.customElements.define('app-component', AppComponent);

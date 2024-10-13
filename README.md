@@ -40,6 +40,14 @@ $ npm install
 ```
 
 ```sh
+# For Windows...
+$env:NODE_ENV="development"
+
+# For Linux/Mac...
+export NODE_ENV="development"
+```
+
+```sh
 $ npm run start
 # ...
 

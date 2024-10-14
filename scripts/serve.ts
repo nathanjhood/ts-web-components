@@ -3,6 +3,7 @@ import http = require('node:http');
 import fs = require('node:fs');
 import url = require('node:url');
 import util = require('node:util');
+import path = require('node:path');
 import browsersList = require('browserslist');
 import esbuild = require('esbuild');
 import normalizePort = require('./utils/normalizePort');
@@ -10,7 +11,10 @@ import getPaths = require('./utils/getPaths');
 import copyPublicFolder = require('./utils/copyPublicFolder');
 import buildHtml = require('./utils/buildHtml');
 
-const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
+const serve = async (
+  proc: NodeJS.Process,
+  proxy: { host: string; port: string }
+) => {
   // SHUTDOWN
 
   /**
@@ -197,6 +201,10 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
       util.styleText('white', 'Server running at'),
       util.styleText('yellow', address.href)
     );
+    console.log(
+      util.styleText('white', 'To exit:'),
+      util.styleText('yellow', 'Ctrl + c')
+    );
     console.log();
   };
 
@@ -216,6 +224,49 @@ const serve = (proc: NodeJS.Process, proxy: { host: string; port: string }) => {
 if (require.main === module) {
   (async (proc: NodeJS.Process) => {
     const paths = getPaths(proc);
+
+    const getClientEnvironment = (proc: NodeJS.Process) => {
+      const NODE: RegExp = /^NODE_/i;
+      const envDefaults: {
+        NODE_ENV: 'development' | 'test' | 'production';
+        PUBLIC_URL: string;
+        WDS_SOCKET_HOST: string | undefined;
+        WDS_SOCKET_PATH: string | undefined;
+        WDS_SOCKET_PORT: string | undefined;
+        FAST_REFRESH: 'true' | 'false';
+      } = {
+        NODE_ENV: proc.env.NODE_ENV || 'development',
+        PUBLIC_URL: proc.env.PUBLIC_URL || '/', // 'publicUrl',
+        WDS_SOCKET_HOST: proc.env.WDS_SOCKET_HOST || undefined, // window.location.hostname,
+        WDS_SOCKET_PATH: proc.env.WDS_SOCKET_PATH || undefined, // '/esbuild',
+        WDS_SOCKET_PORT: proc.env.WDS_SOCKET_PORT || undefined, // window.location.port,
+        FAST_REFRESH: proc.env.FAST_REFRESH || 'false', // !== 'false',
+        // HTTPS: HTTPS !== "false",
+        // HOST: HOST ? HOST : "0.0.0.0",
+        // PORT: PORT ? parseInt(PORT) : 3000
+      };
+      const raw: NodeJS.ProcessEnv = Object.keys(proc.env)
+        .filter((key) => NODE.test(key))
+        .reduce<NodeJS.ProcessEnv>((env, key) => {
+          env[key] = proc.env[key];
+          return env;
+        }, envDefaults);
+      const stringified: {
+        'process.env': NodeJS.ProcessEnv;
+      } = {
+        'process.env': Object.keys(raw)
+          .filter((key) => NODE.test(key))
+          .reduce<NodeJS.ProcessEnv>((env, key) => {
+            env[key] = JSON.stringify(raw[key]);
+            return env;
+          }, raw),
+      };
+
+      return {
+        raw,
+        stringified,
+      };
+    };
     const isEnvDevelopment: boolean = proc.env['NODE_ENV'] === 'development';
     const isEnvProduction: boolean = proc.env['NODE_ENV'] === 'production';
     const isEnvProductionProfile =
@@ -253,9 +304,8 @@ if (require.main === module) {
       outbase: paths.projectSrc,
       outdir: paths.projectBuild,
       tsconfig: paths.projectTsConfig,
-
-      format: 'iife',
-      // platform: 'neutral',
+      format: 'esm',
+      // platform: 'browser',
       target: browsersList(
         isEnvProduction
           ? ['>0.2%', 'not dead', 'not op_mini all']
@@ -289,7 +339,7 @@ if (require.main === module) {
       entryNames: 'static/[ext]/index',
       chunkNames: 'static/[ext]/[name].chunk',
       assetNames: 'static/media/[name]',
-      // splitting: isEnvDevelopment,
+      splitting: isEnvDevelopment,
       // banner: {
       //   js:
       //     proc.env['FAST_REFRESH'] === 'false'
@@ -300,38 +350,27 @@ if (require.main === module) {
         js:
           proc.env['FAST_REFRESH'] === 'false'
             ? ''
-            : `new EventSource('/esbuild').addEventListener('change', () => window.location.reload(),{once:true});`,
-      },
+            : `
+const reload = () => window.location.reload();
+const eventSource = new EventSource('/esbuild');
+eventSource.addEventListener('change',reload,{once:true});`,
+      }, // `new EventSource('/esbuild').addEventListener('change', () => window.location.reload(),{once:true});`
       treeShaking: isEnvProduction,
       minify: isEnvProduction,
-      // sourcemap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
+      sourcemap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
       color: proc.stdout.isTTY,
       resolveExtensions: paths.moduleFileExtensions
         .map((ext) => `.${ext}`)
         .filter((ext) => useTypeScript || !ext.includes('ts')),
-      plugins: [
-        (() => {
-          return {
-            name: 'env',
-            setup(build) {
-              // Intercept import paths called "env" so esbuild doesn't attempt
-              // to map them to a file system location. Tag them with the "env-ns"
-              // namespace to reserve them for this plugin.
-              build.onResolve({ filter: /^env$/ }, (args) => ({
-                path: args.path,
-                namespace: 'env-ns',
-              }));
-
-              // Load paths tagged with the "env-ns" namespace and behave as if
-              // they point to a JSON file containing the environment variables.
-              build.onLoad({ filter: /.*/, namespace: 'env-ns' }, () => ({
-                contents: JSON.stringify(proc.env),
-                loader: 'json',
-              }));
-            },
-          };
-        })(),
-      ],
+      define: {
+        'process.env': JSON.stringify(
+          getClientEnvironment(proc).stringified['process.env']
+        ),
+      },
+      nodePaths: (proc.env['NODE_PATH'] || '')
+        .split(path.delimiter)
+        .filter((folder) => folder && !path.isAbsolute(folder))
+        .map((folder) => path.resolve(paths.projectPath, folder)),
       //
     });
     // enable watch mode
@@ -341,13 +380,18 @@ if (require.main === module) {
       .serve({
         servedir: paths.projectBuild,
       })
-      .then((result) => {
-        serve(proc, { port: result.port.toString(), host: result.host });
-        buildHtml(proc, {
-          appHtml: paths.projectHtml,
-          appBuild: paths.projectBuild,
+      .then(async (proxyResult) => {
+        await serve(proc, {
+          port: proxyResult.port.toString(),
+          host: proxyResult.host,
+        }).then(async (serverResult) => {
+          await buildHtml(proc, {
+            appHtml: paths.projectHtml,
+            appBuild: paths.projectBuild,
+          });
+          return serverResult;
         });
-        return result;
+        return proxyResult;
       });
   })(global.process);
 }

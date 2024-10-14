@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';
 const configs = [
   { files: ['**/*.{js,mjs,cjs,ts}'] },
   { files: ['**/*.js'], languageOptions: { sourceType: 'script' } },
-  // { languageOptions: { globals: globals.node } },
+  { languageOptions: { globals: globals.node } },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,

@@ -1,3 +1,10 @@
+// import { createRequire } from 'node:module';
+// const require: NodeRequire = createRequire(__filename);
+// import env from 'env';
+
+/**
+ *
+ */
 class AppComponent extends HTMLElement {
   /**
    *
@@ -5,6 +12,12 @@ class AppComponent extends HTMLElement {
   static get observedAttributes(): string[] {
     return ['disable'];
   }
+  /**
+   * The internal {@link https://developer.mozilla.org/docs/Web/API/ElementInternals | `ElementInternals`} instance for the component.
+   *
+   * @internal
+   */
+  public elementInternals: ElementInternals = this.attachInternals();
   /**
    *
    */
@@ -20,7 +33,9 @@ class AppComponent extends HTMLElement {
     if (!shadowRoot) {
       throw new Error('Failed to attach a shadowRoot to new App Component()');
     } else {
-      shadowRoot.innerHTML = this.render('Your application goes here!');
+      shadowRoot.innerHTML = this.render(
+        `<pre><code>${3.14159 * 1}</code></pre>`
+      );
     }
   }
   /**
@@ -28,7 +43,7 @@ class AppComponent extends HTMLElement {
    * @returns
    */
   private render(innerHtml: string): string {
-    return `<slot>${innerHtml}</slot>`;
+    return `<slot><p>${innerHtml}</p></slot>`;
   }
   /**
    *
@@ -48,16 +63,15 @@ class AppComponent extends HTMLElement {
    *
    */
   connectedCallback(): void {
-    console.log('Custom square element added to page.');
-    // updateStyle(this);
+    console.debug('<app-component> element added to page.');
   }
 
   disconnectedCallback(): void {
-    console.log('<app-component> removed from page.');
+    console.debug('<app-component> removed from page.');
   }
 
   adoptedCallback(): void {
-    console.log('<app-component> moved to new page.');
+    console.debug('<app-component> moved to new page.');
   }
 
   attributeChangedCallback(
@@ -65,12 +79,22 @@ class AppComponent extends HTMLElement {
     oldValue: string,
     newValue: string
   ): void {
-    console.log('<app-component> attributes changed.');
-    // updateStyle(this);
+    console.log('<app-component> attributes changed.', {
+      name: name,
+      oldValue: oldValue,
+      newValue: newValue,
+    });
   }
 }
 
 export = AppComponent;
 
-window.customElements.define('app-component', AppComponent);
+if (!customElements.get('app-component')) {
+  window.customElements.define('app-component', AppComponent);
+}
+
 document.getElementById('root')?.appendChild(new AppComponent());
+
+// function App() {
+//   return document.createElement('app-component');
+// }

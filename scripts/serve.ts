@@ -65,7 +65,7 @@ const serve = async (
       null,
       'utf-8'
     );
-    shutdown();
+    // shutdown();
   };
 
   proc.on('beforeExit', handleBeforeExit);

@@ -12,31 +12,26 @@ const render = <T extends HTMLElement>(element: () => T) => {
 
   const root: HTMLElement | null = document.getElementById('root');
 
-  if (!root) return;
-
-  if (element) {
-    const el: T = element();
-    root.appendChild<ReturnType<typeof element>>(el);
+  if (root === null) {
+    errors.push(new Error('Missing HTML tag with id="root"'));
+  } else {
+    if (element) {
+      const el: T = element();
+      root.appendChild<ReturnType<typeof element>>(el);
+    }
   }
 
   // error reporting
   if (errors.length > 0 || warnings.length > 0) {
-    const messages: Error[] = [];
-    messages.concat(warnings, errors);
-    messages.forEach(async (error, index) => {
-      const errorMessage = JSON.stringify({
-        index: index,
-        [error.name]: {
-          message: error.message,
-          stack: error.stack,
-        },
-      });
+    const messages: Error[] = errors.concat(warnings);
+    messages.forEach(async (message) => {
       const pre = document.createElement('pre');
       const code = document.createElement('code');
-      code.innerText += errorMessage;
+      code.innerText += message.stack + '\n';
       pre.appendChild(code);
       document.body.appendChild(pre);
-      console.error(error.message);
+      console.error(message.message);
+      return message;
     });
   }
 };

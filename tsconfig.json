@@ -42,9 +42,13 @@
     "composite": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "tsBuildInfoFile": ".tsbuildinfo"
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "jsx": "preserve",
+    "jsxImportSource": "ts-web-components",
+    "outDir": "./dist"
   },
   "include": [
+    "./jsx-runtime.d.ts",
     "**/**/*.d.ts",
     "lib",
     "src",

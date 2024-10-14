@@ -77,11 +77,11 @@ const serve = async (
   const errors: Error[] = [];
 
   if (proc.env['NODE_ENV'] === undefined) {
-    warnings.push(
-      new Error(
-        "'NODE_ENV' should be set to one of: 'developent', 'production', or 'test'; but, it was 'undefined'"
-      )
+    const e = new Error(
+      "'NODE_ENV' should be set to one of: 'developent', 'production', or 'test'; but, it was 'undefined'"
     );
+    // warnings.push(e);
+    throw e;
   }
 
   // CONSOLE
@@ -298,6 +298,7 @@ if (require.main === module) {
     // Start esbuild's server on a random local port
     const ctx = await esbuild.context({
       // ... your build options go here ...
+      bundle: true,
       absWorkingDir: paths.projectPath,
       publicPath: paths.projectPublic,
       entryPoints: [paths.projectIndexJs],

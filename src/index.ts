@@ -1,3 +1,4 @@
+import './index.css';
 import App = require('./App');
 
 /**
@@ -6,7 +7,7 @@ import App = require('./App');
  * Requires that your HTML document contains a tag with id set to "root".
  * Renders error and warning messages in case of failure.
  */
-const render = <T extends HTMLElement>(element: () => T) => {
+const render = <T extends HTMLElement = HTMLElement>(element: () => T) => {
   const warnings: Error[] = [];
   const errors: Error[] = [];
 
@@ -23,13 +24,18 @@ const render = <T extends HTMLElement>(element: () => T) => {
 
   // error reporting
   if (errors.length > 0 || warnings.length > 0) {
+    //
     const messages: Error[] = errors.concat(warnings);
+    //
     messages.forEach(async (message) => {
+      //
       const pre = document.createElement('pre');
       const code = document.createElement('code');
       code.innerText += message.stack + '\n';
+      //
       pre.appendChild(code);
       document.body.appendChild(pre);
+      //
       console.error(message.message);
       return message;
     });

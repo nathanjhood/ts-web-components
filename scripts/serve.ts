@@ -6,6 +6,7 @@ import util = require('node:util');
 import path = require('node:path');
 import browsersList = require('browserslist');
 import esbuild = require('esbuild');
+import getClientEnv = require('./utils/getClientEnv');
 import normalizePort = require('./utils/normalizePort');
 import getPaths = require('./utils/getPaths');
 import copyPublicFolder = require('./utils/copyPublicFolder');
@@ -126,10 +127,10 @@ const serve = async (
         args.forEach((err) => console.error(err));
       }
       // proc.exit(1);
-      process.exitCode = 1;
+      proc.exitCode = 1;
     }
     // proc.exit(0);
-    process.exitCode = 0;
+    proc.exitCode = 0;
   };
 
   /**
@@ -162,36 +163,36 @@ const serve = async (
   const handleServerRequestEvent: Http.RequestListener<
     typeof Http.IncomingMessage,
     typeof Http.ServerResponse
-  > = (request, response) => {
+  > = (serverRequest, serverResponse) => {
     const date = new Date();
-    console.log(date.toISOString(), request.method, request.url);
+    console.log(date.toISOString(), serverRequest.method, serverRequest.url);
 
     const options = {
       hostname: proxy.host,
       port: proxy.port,
-      path: request.url,
-      method: request.method,
-      headers: request.headers,
+      path: serverRequest.url,
+      method: serverRequest.method,
+      headers: serverRequest.headers,
     };
     // Forward each incoming request to esbuild
     const proxyRequest = http.request(options, (proxyResponse) => {
       // If esbuild returns "not found", send a custom 404 page
       if (proxyResponse.statusCode === 404) {
-        response.writeHead(404, { 'Content-Type': 'text/html' });
-        response.end('<h1>A custom 404 page</h1>');
+        serverResponse.writeHead(404, { 'Content-Type': 'text/html' });
+        serverResponse.end('<h1>A custom 404 page</h1>');
         return;
       }
 
       // Otherwise, forward the response from esbuild to the client
-      response.writeHead(
+      serverResponse.writeHead(
         proxyResponse.statusCode || 500,
         proxyResponse.headers
       );
-      proxyResponse.pipe(response, { end: true });
+      proxyResponse.pipe(serverResponse, { end: true });
     });
 
     // Forward the body of the request to esbuild
-    request.pipe(proxyRequest, { end: true });
+    serverRequest.pipe(proxyRequest, { end: true });
   };
 
   const handleServerListenEvent = (): void => {
@@ -224,49 +225,6 @@ const serve = async (
 if (require.main === module) {
   (async (proc: NodeJS.Process) => {
     const paths = getPaths(proc);
-
-    const getClientEnvironment = (proc: NodeJS.Process) => {
-      const NODE: RegExp = /^NODE_/i;
-      const envDefaults: {
-        NODE_ENV: 'development' | 'test' | 'production';
-        PUBLIC_URL: string;
-        WDS_SOCKET_HOST: string | undefined;
-        WDS_SOCKET_PATH: string | undefined;
-        WDS_SOCKET_PORT: string | undefined;
-        FAST_REFRESH: 'true' | 'false';
-      } = {
-        NODE_ENV: proc.env.NODE_ENV || 'development',
-        PUBLIC_URL: proc.env.PUBLIC_URL || '/', // 'publicUrl',
-        WDS_SOCKET_HOST: proc.env.WDS_SOCKET_HOST || undefined, // window.location.hostname,
-        WDS_SOCKET_PATH: proc.env.WDS_SOCKET_PATH || undefined, // '/esbuild',
-        WDS_SOCKET_PORT: proc.env.WDS_SOCKET_PORT || undefined, // window.location.port,
-        FAST_REFRESH: proc.env.FAST_REFRESH || 'false', // !== 'false',
-        // HTTPS: HTTPS !== "false",
-        // HOST: HOST ? HOST : "0.0.0.0",
-        // PORT: PORT ? parseInt(PORT) : 3000
-      };
-      const raw: NodeJS.ProcessEnv = Object.keys(proc.env)
-        .filter((key) => NODE.test(key))
-        .reduce<NodeJS.ProcessEnv>((env, key) => {
-          env[key] = proc.env[key];
-          return env;
-        }, envDefaults);
-      const stringified: {
-        'process.env': NodeJS.ProcessEnv;
-      } = {
-        'process.env': Object.keys(raw)
-          .filter((key) => NODE.test(key))
-          .reduce<NodeJS.ProcessEnv>((env, key) => {
-            env[key] = JSON.stringify(raw[key]);
-            return env;
-          }, raw),
-      };
-
-      return {
-        raw,
-        stringified,
-      };
-    };
     const isEnvDevelopment: boolean = proc.env['NODE_ENV'] === 'development';
     const isEnvProduction: boolean = proc.env['NODE_ENV'] === 'production';
     const isEnvProductionProfile =
@@ -284,7 +242,7 @@ if (require.main === module) {
       'rhino',
       'safari',
     ];
-    const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
+    const shouldUseSourceMap = proc.env.GENERATE_SOURCEMAP !== 'false';
     const useTypeScript: boolean = fs.existsSync(paths.projectTsConfig);
     const wdsSocketPath = proc.env['WDS_SOCKET_PATH'] || '/esbuild';
     const wdsSocketHost =
@@ -332,7 +290,7 @@ if (require.main === module) {
         '.js': 'js',
         '.tsx': 'tsx',
         '.ts': 'ts',
-        '.svg': 'file',
+        '.svg': 'base64',
         '.png': 'file',
         '.ico': 'file',
       },
@@ -365,7 +323,7 @@ eventSource.addEventListener('change',reload,{once:true});`,
         .filter((ext) => useTypeScript || !ext.includes('ts')),
       define: {
         'process.env': JSON.stringify(
-          getClientEnvironment(proc).stringified['process.env']
+          getClientEnv(proc).stringified['process.env']
         ),
       },
       nodePaths: (proc.env['NODE_PATH'] || '')

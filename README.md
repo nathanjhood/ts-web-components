@@ -23,7 +23,7 @@ Typed OOP in the browser!
 
 Just raw [Web API](https://developer.mozilla.org/en-US/docs/Web/API).
 
-With TailwindCSS, ESBuild, and fast-refreshing development server!
+Powered by Typescript, TailwindCSS, ESBuild, and fast-refreshing development server!
 
 ## How to...
 
@@ -55,19 +55,14 @@ $ npm run start
 
 Rebuilding...
 
-   ┌──────────────────────────────────────────┐
-   │                                          │
-   │   Serving!                               │
-   │                                          │
-   │   - Local:    http://localhost:3000      │
-   │   - Network:  http://192.168.0.13:3000   │
-   │                                          │
-   │   Copied local address to clipboard!     │
-   │                                          │
-   └──────────────────────────────────────────┘
+Done in 1623ms.
+
+Server running at http://127.0.0.1:3000/
+To exit: Ctrl + c
+
 ```
 
-[Open in your browser](http://localhost:3000) and edit `src/App.ts` - the page will autmoatically refresh itself after every save.
+[Open in your browser](http://localhost:3000) and edit `src/App.ts` - the page will automatically refresh itself after every save.
 
 ---
 

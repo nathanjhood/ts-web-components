@@ -1,7 +1,6 @@
+import env from 'env';
 import './App.css';
 import logo = require('./logo.svg');
-
-import env from 'env';
 
 const App = () => {
   //
@@ -19,24 +18,15 @@ const App = () => {
         constructor() {
           super();
           console.debug('constructor()');
-          this.setup();
         }
         /**
          *
          */
-        private setup() {
+        private setup(): void {
           console.debug('setup()');
           const shadowRoot: ShadowRoot = this.attachShadow({ mode: 'open' });
           if (shadowRoot) {
             shadowRoot.innerHTML = this.render();
-          }
-        }
-        connectedCallback(): void {
-          console.debug('<app-component> element added to page.');
-          const shadowRoot = this.shadowRoot;
-          if (!shadowRoot) {
-            throw new Error('No shadowRoot to attach external stylesheet to!');
-          } else {
             // Apply external styles to the shadow dom
             const linkElem = document.createElement('link');
             linkElem.setAttribute('rel', 'stylesheet');
@@ -47,6 +37,13 @@ const App = () => {
             // Attach the created elements to the shadow dom
             shadowRoot.appendChild(linkElem);
           }
+        }
+        /**
+         *
+         */
+        connectedCallback(): void {
+          this.setup();
+          console.debug('<app-component> element added to page.');
         }
 
         disconnectedCallback(): void {

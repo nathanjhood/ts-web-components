@@ -34,7 +34,7 @@ const App = (): HTMLElement => {
           linkElem.setAttribute('rel', 'stylesheet');
           linkElem.setAttribute(
             'href',
-            `${env['PUBLIC_URL']}/static/css/index.css`
+            `${env['PUBLIC_URL']}static/css/index.css`
           );
           // Attach the created elements to the shadow dom
           shadowRoot.appendChild<HTMLLinkElement>(linkElem);

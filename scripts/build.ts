@@ -1,13 +1,8 @@
-import type Http = require('node:http');
-import http = require('node:http');
 import fs = require('node:fs');
-import url = require('node:url');
-import util = require('node:util');
 import path = require('node:path');
 import browsersList = require('browserslist');
 import esbuild = require('esbuild');
 import getClientEnv = require('./utils/getClientEnv');
-import normalizePort = require('./utils/normalizePort');
 import getPaths = require('./utils/getPaths');
 import copyPublicFolder = require('./utils/copyPublicFolder');
 import buildHtml = require('./utils/buildHtml');
@@ -34,9 +29,6 @@ if (require.main === module) {
     ];
     const shouldUseSourceMap = proc.env.GENERATE_SOURCEMAP !== 'false';
     const useTypeScript: boolean = fs.existsSync(paths.projectTsConfig);
-    const wdsSocketPath = proc.env['WDS_SOCKET_PATH'] || '/esbuild';
-    const wdsSocketHost =
-      proc.env['WDS_SOCKET_HOST'] || 'window.location.hostname';
     copyPublicFolder({
       appBuild: paths.projectBuild,
       appHtml: paths.projectHtml,
@@ -136,6 +128,17 @@ if (require.main === module) {
           appHtml: paths.projectHtml,
           appBuild: paths.projectBuild,
         });
+        const errorMessages = await esbuild.formatMessages(buildResult.errors, {
+          kind: 'error',
+        });
+        const warningMessages = await esbuild.formatMessages(
+          buildResult.warnings,
+          { kind: 'warning' }
+        );
+        errorMessages.forEach((errorMessage) => console.error(errorMessage));
+        warningMessages.forEach((warningMessage) =>
+          console.warn(warningMessage)
+        );
         return buildResult;
       })
       .catch((error) => {

@@ -74,7 +74,7 @@ const serve = async (
   proc.on('SIGTERM', handleSigterm);
   proc.on('SIGINT', handleSigint);
 
-  const warnings: Error[] = [];
+  // const warnings: Error[] = [];
   const errors: Error[] = [];
 
   if (proc.env['NODE_ENV'] === undefined) {
@@ -136,6 +136,7 @@ const serve = async (
   /**
    * Event listener for HTTP server "error" event.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleServerErrorEvent = (error: any) => {
     if (error.syscall !== 'listen') {
       throw error;
@@ -227,8 +228,8 @@ if (require.main === module) {
     const paths = getPaths(proc);
     const isEnvDevelopment: boolean = proc.env['NODE_ENV'] === 'development';
     const isEnvProduction: boolean = proc.env['NODE_ENV'] === 'production';
-    const isEnvProductionProfile =
-      isEnvProduction && proc.argv.includes('--profile');
+    // const isEnvProductionProfile =
+    //   isEnvProduction && proc.argv.includes('--profile');
     const supportedTargets = [
       'chrome',
       'deno',
@@ -244,9 +245,9 @@ if (require.main === module) {
     ];
     const shouldUseSourceMap = proc.env.GENERATE_SOURCEMAP !== 'false';
     const useTypeScript: boolean = fs.existsSync(paths.projectTsConfig);
-    const wdsSocketPath = proc.env['WDS_SOCKET_PATH'] || '/esbuild';
-    const wdsSocketHost =
-      proc.env['WDS_SOCKET_HOST'] || 'window.location.hostname';
+    // const wdsSocketPath = proc.env['WDS_SOCKET_PATH'] || '/esbuild';
+    // const wdsSocketHost =
+    //   proc.env['WDS_SOCKET_HOST'] || 'window.location.hostname';
     copyPublicFolder({
       appBuild: paths.projectBuild,
       appHtml: paths.projectHtml,

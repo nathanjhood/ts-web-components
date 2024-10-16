@@ -41,7 +41,7 @@ class AppComponent extends HTMLElement {
     if (!shadowRoot) {
       throw new Error('Failed to attach a shadowRoot to new App Component()');
     }
-    this.props = { foo: 'Your application foos here!' };
+    this.props = { foo: 'Your application goes here!' };
     shadowRoot.innerHTML = this.render(
       `<pre><code>${this.props.foo || 'foo was undefined'}</code></pre>`
     );
@@ -51,7 +51,7 @@ class AppComponent extends HTMLElement {
    * @returns
    */
   private render(innerHtml: string): string {
-    return `<slot><p>${innerHtml}</p></slot>`;
+    return `<slot>${innerHtml}</slot>`;
   }
   /**
    *

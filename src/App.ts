@@ -1,6 +1,8 @@
 import './App.css';
 import logo = require('./logo.svg');
 
+import env from 'env';
+
 const App = () => {
   //
   if (!window.customElements.get('app-component')) {
@@ -38,7 +40,10 @@ const App = () => {
             // Apply external styles to the shadow dom
             const linkElem = document.createElement('link');
             linkElem.setAttribute('rel', 'stylesheet');
-            linkElem.setAttribute('href', '/static/css/index.css');
+            linkElem.setAttribute(
+              'href',
+              `${env['PUBLIC_URL']}/static/css/index.css`
+            );
             // Attach the created elements to the shadow dom
             shadowRoot.appendChild(linkElem);
           }

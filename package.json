@@ -8,7 +8,7 @@
     "build-only": "tsx scripts/build.ts",
     "serve": "tsx scripts/serve.ts",
     "build": "run-s css build-only",
-    "start": "run-p --parallel css-watch serve",
+    "start": "run-p css-watch serve",
     "css": "tailwindcss -i src/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs",
     "css-watch": "tailwindcss -i src/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs --watch",
     "type-check": "tsc --noEmit",

@@ -76,6 +76,6 @@ declare module '*.sass';
 declare module '*.scss';
 
 declare module 'env' {
-  const env: { readonly [key: string]: string }; // NodeJS.ProcessEnv
+  const env: { readonly [key: string | 'symbol']: string }; // NodeJS.ProcessEnv
   export default env;
 }

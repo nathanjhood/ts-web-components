@@ -330,6 +330,6 @@ customElements.define('app-component',
 - [MDN's Web API - HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 - [Building Interoperable Web Components (including React)](https://css-tricks.com/building-interoperable-web-components-react/)
 
-[Read me on github.com](https://github.com/nathanjhood/web-components)
+[Read me on github.com](https://github.com/nathanjhood/ts-web-components)
 
-[Read me on nathanjhood.github.io](https://nathanjhood.github.io/web-components)
+[Read me on nathanjhood.github.io](https://nathanjhood.github.io/ts-web-components)

@@ -1,0 +1,97 @@
+name: node
+
+on:
+  # Runs on all pushes
+  push:
+  # # A push is made to a GitHub Pages-enabled branch
+  # page_build:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# When pushing new commits, cancel any running builds on that branch
+concurrency:
+  group: node-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJECT_NAME: 'ts-web-components'
+  PROJECT_VERSION: '0.1.0.${{ github.sha }}'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NODE_ENV: 'production'
+  BUILD_DIR: 'dist'
+  TSC_COMPILE_ON_ERROR: false
+
+jobs:
+  run:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [20, latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Environment
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        run: |
+          cp .env .env.local
+          cp .env.test .env.test.local
+          cp .env.development .env.development.local
+          cp .env.production .env.production.local
+
+      - name: Install
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        run: yarn
+
+      # - name: Test
+      #   shell: bash
+      #   env:
+      #     NODE_ENV: test
+      #   working-directory: ${{ github.workspace }}
+      #   run: yarn test
+
+      - name: Build
+        shell: bash
+        env:
+          NODE_ENV: production
+        working-directory: ${{ github.workspace }}
+        run: yarn build
+
+      # - name: Start
+      #   shell: bash
+      #   env:
+      #     NODE_ENV: production
+      #   working-directory: ${{ github.workspace }}
+      #   run: yarn start build
+
+      - name: Pack
+        shell: bash
+        env:
+          NODE_ENV: production
+        working-directory: ${{ github.workspace }}
+        run: yarn pack --filename ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}-${{ matrix.os }}-node-${{ matrix.node-version }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}-${{ matrix.os }}-node-${{ matrix.node-version }}
+          path: '${{ github.workspace }}/${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}-${{ matrix.os }}-node-${{ matrix.node-version }}'
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}-${{ matrix.os }}-node-${{ matrix.node-version }}
+          path: '${{ github.workspace }}'
+          github-token: ${{ env.GITHUB_TOKEN }}

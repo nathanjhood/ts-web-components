@@ -19,9 +19,11 @@ Typed OOP in the browser!
 
 - No config
 - No framework
-- No abtractions
+- No abstractions
 
 Just raw [Web API](https://developer.mozilla.org/en-US/docs/Web/API).
+
+With TailwindCSS, ESBuild, and fast-refreshing development server!
 
 ## How to...
 
@@ -65,7 +67,7 @@ Rebuilding...
    └──────────────────────────────────────────┘
 ```
 
-[Open in your browser](http://localhost:3000) and refresh the page after every change.
+[Open in your browser](http://localhost:3000) and edit `src/App.ts` - the page will autmoatically refresh itself after every save.
 
 ---
 

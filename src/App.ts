@@ -2,7 +2,9 @@ import env from 'env';
 import './App.css';
 import logo = require('./logo.svg');
 
-const App = () => {
+const App = (): HTMLElement => {
+  //
+  const logoSrc = 'data:image/svg+xml;base64,' + logo;
   //
   if (!window.customElements.get('app-component')) {
     console.log('constructing App()');
@@ -10,6 +12,7 @@ const App = () => {
       'app-component',
       /**
        * The `AppComponent` class.
+       * @extends {HTMLElement}
        */
       class AppComponent extends HTMLElement {
         /**
@@ -23,35 +26,40 @@ const App = () => {
          *
          */
         private setup(): void {
-          console.debug('setup()');
           const shadowRoot: ShadowRoot = this.attachShadow({ mode: 'open' });
-          if (shadowRoot) {
-            shadowRoot.innerHTML = this.render();
-            // Apply external styles to the shadow dom
-            const linkElem = document.createElement('link');
-            linkElem.setAttribute('rel', 'stylesheet');
-            linkElem.setAttribute(
-              'href',
-              `${env['PUBLIC_URL']}/static/css/index.css`
-            );
-            // Attach the created elements to the shadow dom
-            shadowRoot.appendChild(linkElem);
-          }
+          shadowRoot.innerHTML = this.render();
+          // Append external stylesheet to the shadow dom
+          const linkElem: HTMLLinkElement =
+            document.createElement<'link'>('link');
+          linkElem.setAttribute('rel', 'stylesheet');
+          linkElem.setAttribute(
+            'href',
+            `${env['PUBLIC_URL']}/static/css/index.css`
+          );
+          // Attach the created elements to the shadow dom
+          shadowRoot.appendChild<HTMLLinkElement>(linkElem);
+          console.debug('setup()');
         }
         /**
          *
          */
         connectedCallback(): void {
           this.setup();
-          console.debug('<app-component> element added to page.');
+          console.debug(
+            '<app-component connectedCallback()> - element added to page.'
+          );
         }
 
         disconnectedCallback(): void {
-          console.debug('<app-component> removed from page.');
+          console.debug(
+            '<app-component disconnectedCallback()> - element removed from page.'
+          );
         }
 
         adoptedCallback(): void {
-          console.debug('<app-component> moved to new page.');
+          console.debug(
+            '<app-component adoptedCallback()> - element moved to new page.'
+          );
         }
 
         attributeChangedCallback(
@@ -59,18 +67,21 @@ const App = () => {
           oldValue: string,
           newValue: string
         ): void {
-          console.debug('<app-component> attributes changed.', {
-            name: name,
-            oldValue: oldValue,
-            newValue: newValue,
-          });
+          console.debug(
+            '<app-component attributeChangedCallback()> attributes changed.',
+            {
+              name: name,
+              oldValue: oldValue,
+              newValue: newValue,
+            }
+          );
         }
         private render(): string {
           return `
 <div class="App">
   <header class="App-header">
   <img
-    src="data:image/svg+xml;base64,${logo}"
+    src="${logoSrc}"
     class="App-logo"
     alt="logo"
   />

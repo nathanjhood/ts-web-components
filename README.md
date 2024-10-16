@@ -30,11 +30,11 @@ With TailwindCSS, ESBuild, and fast-refreshing development server!
 ### `serve ./public`
 
 ```sh
-$ git clone git@github.com:nathanjhood/web-components.git
+$ git clone git@github.com:nathanjhood/ts-web-components.git
 ```
 
 ```sh
-$ cd web-components
+$ cd ts-web-components
 ```
 
 ```sh
@@ -71,37 +71,10 @@ Rebuilding...
 
 ---
 
-### `<projectFolder>/public`
-
-```sh
-./
-├── index.html
-└── static/
-    ├── css/
-    │   └── index.css
-    ├── js/
-    │   └── index.js
-    └── png/
-        └── logo.png
-
-4 directories, 4 files
-```
-
-```sh
-./index.html
-./static/css/index.css
-./static/js/index.js
-./static/png/logo.png
-
-4 directories, 4 files
-```
-
----
-
 ### `class AppComponent {}`
 
 ```ts
-// static/js/index.js
+// src/App.ts
 
 class AppComponent {}
 ```

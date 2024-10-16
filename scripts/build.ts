@@ -90,21 +90,6 @@ if (require.main === module) {
         chunkNames: 'static/[ext]/[name].chunk',
         assetNames: 'static/media/[name]',
         splitting: isEnvDevelopment,
-        // banner: {
-        //   js:
-        //     proc.env['FAST_REFRESH'] === 'false'
-        //       ? ''
-        //       : `new EventSource('${wdsSocketPath}').addEventListener('change', () => ${wdsSocketHost}.reload(),{once:true});`,
-        // },
-        banner: {
-          js:
-            proc.env['FAST_REFRESH'] === 'false'
-              ? ''
-              : `
-const reload = () => window.location.reload();
-const eventSource = new EventSource('/esbuild');
-eventSource.addEventListener('change',reload,{once:true});`,
-        }, // `new EventSource('/esbuild').addEventListener('change', () => window.location.reload(),{once:true});`
         treeShaking: isEnvProduction,
         minify: isEnvProduction,
         sourcemap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,

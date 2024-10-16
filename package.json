@@ -1,13 +1,14 @@
 {
   "name": "ts-web-components",
+  "homepage": "https://nathanjhood.github.io/ts-web-components/",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "scripts": {
     "build-only": "tsx scripts/build.ts",
     "serve": "tsx scripts/serve.ts",
-    "build": "npm-run-all --parallel css build-only",
-    "start": "npm-run-all --parallel css-watch serve",
+    "build": "run-s css build-only",
+    "start": "run-p --parallel css-watch serve",
     "css": "tailwindcss -i src/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs",
     "css-watch": "tailwindcss -i src/tailwind.css -o public/static/css/tailwind.css --config tailwind.config.mjs --watch",
     "type-check": "tsc --noEmit",

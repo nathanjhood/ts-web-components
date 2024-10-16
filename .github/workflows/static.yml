@@ -30,7 +30,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NODE_ENV: 'production'
   BUILD_PATH: 'dist'
-  PUBLIC_URL: 'https://nathanjhood.github.io/ts-web-components'
+  PUBLIC_URL: 'https://nathanjhood.github.io/ts-web-components/'
   HOST: 'nathanjhood.github.io'
   PORT: 80
   HTTPS: true

@@ -373,6 +373,9 @@ const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
   return document.createElement<'button'>('button');
 };
 
+const customButton = CustomButton({ type: 'submit' });
+const customButtonB = CustomButton({ type: 'submit', children: customButton });
+
 ```
 
 ---

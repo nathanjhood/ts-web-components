@@ -40,6 +40,10 @@ Step by step!
 - [`'app-component': AppComponent`](#app-component-appcomponent)
 - [`AppComponent.render()`](#appcomponentrender)
 - [`AppComponent.render(innerHTML)`](#appcomponentrenderinnerhtml)
+- [`AppComponent.setup()`](#appcomponentsetup)
+- [`createElement('app-component')`](#createelementapp-component)
+- [`App()`](#app)
+- [`render(App)`](#renderapp)
 - [`<app-component>`](#app-component)
 - [Tips](#tips)
 - [Further Reading](#further-reading)
@@ -162,6 +166,7 @@ class AppComponent extends HTMLElement {
 ### `CustomElementRegistry`
 
 ```ts
+// IMPORTANT
 window.customElements.define('app-component', AppComponent);
 ```
 
@@ -170,14 +175,14 @@ window.customElements.define('app-component', AppComponent);
 ### `'app-component': AppComponent`
 
 ```ts
-window.customElements.define('app-component',
+window.customElements.define('app-component', // <-- wrap the class!
   class AppComponent extends HTMLElement {
     constructor() {
       super();
       this.innerHTML = `<slot>Your app goes here</slot>`;
     }
   }
-);
+); // <-- '.define()' ends here!
 ```
 
 ---
@@ -187,15 +192,17 @@ window.customElements.define('app-component',
 ### `AppComponent.render()`
 
 ```ts
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.innerHTML = this.render();
+window.customElements.define('app-component',
+  class AppComponent extends HTMLElement {
+    constructor() {
+      super();
+      this.innerHTML = this.render();
+    }
+    render() {
+      return `<slot>Your app goes here</slot>`;
+    }
   }
-  render() {
-    return `<slot>Your app goes here</slot>`;
-  }
-}
+);
 ```
 
 ---
@@ -203,15 +210,17 @@ class AppComponent extends HTMLElement {
 ### `AppComponent.render(innerHTML)`
 
 ```ts
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.innerHTML = this.render('Your app goes here');
+window.customElements.define('app-component',
+  class AppComponent extends HTMLElement {
+    constructor() {
+      super();
+      this.innerHTML = this.render('Your app goes here');
+    }
+    render(innerHTML: string): string {
+      return `<slot>${innerHTML}</slot>`;
+    }
   }
-  render(innerHTML: string): string {
-    return `<slot>${innerHTML}</slot>`;
-  }
-}
+);
 ```
 
 ---
@@ -219,18 +228,90 @@ class AppComponent extends HTMLElement {
 ### `AppComponent.setup()`
 
 ```ts
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-	  this.setup();
+window.customElements.define('app-component',
+  class AppComponent extends HTMLElement {
+    constructor() {
+      super();
+      this.setup();
+    }
+    setup(): void {
+      this.innerHTML = this.render('Your app goes here');
+    }
+    render(innerHTML: string): string {
+      return `<slot>${innerHTML}</slot>`;
+    }
   }
-  setup(): void {
-    this.innerHTML = this.render('Your app goes here');
+);
+```
+
+---
+
+### `createElement('app-component')`
+
+```ts
+window.customElements.define('app-component',
+  class AppComponent extends HTMLElement {
+    constructor() {
+      super();
+      this.setup();
+    }
+    setup(): void {
+      this.innerHTML = this.render('Your app goes here');
+    }
+    render(innerHTML: string): string {
+      return `<slot>${innerHTML}</slot>`;
+    }
   }
-  render(innerHTML: string): string {
-    return `<slot>${innerHTML}</slot>`;
-  }
+);
+
+const app = document.createElement('app-component');
+```
+
+---
+
+### `App()`
+
+```ts
+const App = () => {
+  // define the component
+  window.customElements.define('app-component',
+    class AppComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.setup();
+      }
+      setup(): void {
+        this.innerHTML = this.render('Your app goes here');
+      }
+      render(innerHTML: string): string {
+        return `<slot>${innerHTML}</slot>`;
+      }
+    }
+  );
+  // then return it
+  return document.createElement('app-component');
 }
+
+// Now we can assign it :)
+const app = App();
+```
+
+---
+
+### `render(App)`
+
+```ts
+// src/index.ts
+
+import App = require('./App');
+
+const render = (element: () => HTMLElement) = {
+  // ...attaches passed-in element to document
+}
+
+// so, pass it our App :)
+render(App)
+
 ```
 
 ---

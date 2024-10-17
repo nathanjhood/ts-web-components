@@ -313,14 +313,14 @@ const button = Button();
 ```ts
 // example
 
-const CustomButton = (): HTMLButtonElement => {
+const CustomButton = () => {
   class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
     }
   }
   customElements.define('custom-button', CustomButtonElement)
-  return document.createElement<'button'>('button');
+  return document.createElement('custom-button') as CustomButtonElement;
 };
 
 // CustomButtom
@@ -336,7 +336,7 @@ type CustomButtonProps = {
   type: 'submit' | 'reset' | 'button';
 };
 
-const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
+const CustomButton = (props: CustomButtonProps) => {
   class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
@@ -344,7 +344,7 @@ const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
     }
   }
   customElements.define('custom-button', CustomButtonElement);
-  return document.createElement<'button'>('button');
+  return document.createElement('custom-button') as CustomButtonElement;
 };
 
 const customButton = CustomButton({ type: 'submit' });
@@ -361,7 +361,7 @@ type CustomButtonProps = {
   children?: Node;
 };
 
-const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
+const CustomButton = (props: CustomButtonProps) => {
   class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
@@ -370,7 +370,7 @@ const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
     }
   }
   customElements.define('custom-button', CustomButtonElement);
-  return document.createElement<'button'>('button');
+  return document.createElement('custom-button') as CustomButtonElement;
 };
 
 const customButtonA = CustomButton({ type: 'submit' });
@@ -389,7 +389,7 @@ type CustomButtonProps = {
   className?: string;
 };
 
-const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
+const CustomButton = (props: CustomButtonProps) => {
   class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
@@ -399,7 +399,7 @@ const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
     }
   }
   customElements.define('custom-button', CustomButtonElement);
-  return document.createElement<'button'>('button');
+  return document.createElement('custom-button') as CustomButtonElement;
 };
 
 const tailwindButton = CustomButton({

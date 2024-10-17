@@ -29,6 +29,21 @@ Powered by Typescript, TailwindCSS, ESBuild, and fast-refreshing development ser
 
 Step by step!
 
+- [`start`](#start)
+- [`class AppComponent {}`](#class-appcomponent-)
+- [`AppComponent.constructor()`](#appcomponentconstructor)
+- [`AppComponent extends HTMLElement`](#appcomponent-extends-htmlelement)
+- [`HTMLElement.super()`](#htmlelementsuper)
+- [`this`](#this)
+- [`AppComponent.innerHtml`](#appcomponentinnerhtml)
+- [`CustomElementRegistry`](#customelementregistry)
+- [`'app-component': AppComponent`](#app-component-appcomponent)
+- [`AppComponent.render()`](#appcomponentrender)
+- [`AppComponent.render(innerHTML)`](#appcomponentrenderinnerhtml)
+- [`<app-component>`](#app-component)
+- [Tips](#tips)
+- [Further Reading](#further-reading)
+
 ### `start`
 
 ```sh
@@ -131,23 +146,7 @@ class AppComponent extends HTMLElement {
 
 ---
 
-### `AppComponent.shadowRoot`
-
-```ts
-// "attachShadow()" comes from extending the HTMLElement class ;)
-
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-}
-
-```
-
----
-
-### `AppComponent.shadowRoot.innerHtml`
+### `AppComponent.innerHtml`
 
 ```ts
 // 'innerHTML' === <app-component>innerHTML</app-component>
@@ -155,8 +154,7 @@ class AppComponent extends HTMLElement {
 class AppComponent extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = `<slot>Your app goes here</slot>`;
+    this.innerHTML = `<slot>Your app goes here</slot>`;
   }
 }
 ```
@@ -176,8 +174,7 @@ window.customElements.define('app-component',
   class AppComponent extends HTMLElement {
     constructor() {
       super();
-      this.attachShadow({ mode: 'open' });
-      this.shadowRoot.innerHTML = `<slot>Your app goes here</slot>`;
+      this.innerHTML = `<slot>Your app goes here</slot>`;
     }
   }
 );
@@ -185,19 +182,55 @@ window.customElements.define('app-component',
 
 ---
 
-### `root.appendChild(ApplicationComponent)`
+---
+
+### `AppComponent.render()`
 
 ```ts
-window.customElements.define('app-component',
-  class AppComponent extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open' });
-      this.shadowRoot.innerHTML = `<slot>Your app goes here</slot>`;
-	    document.getElementById("root")?.appendChild(this);
-    }
+class AppComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.innerHTML = this.render();
   }
-);
+  render() {
+    return `<slot>Your app goes here</slot>`;
+  }
+}
+```
+
+---
+
+### `AppComponent.render(innerHTML)`
+
+```ts
+class AppComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.innerHTML = this.render('Your app goes here');
+  }
+  render(innerHTML: string): string {
+    return `<slot>${innerHTML}</slot>`;
+  }
+}
+```
+
+---
+
+### `AppComponent.setup()`
+
+```ts
+class AppComponent extends HTMLElement {
+  constructor() {
+    super();
+	  this.setup();
+  }
+  setup(): void {
+    this.innerHTML = this.render('Your app goes here');
+  }
+  render(innerHTML: string): string {
+    return `<slot>${innerHTML}</slot>`;
+  }
+}
 ```
 
 ---
@@ -233,62 +266,7 @@ window.customElements.define('app-component',
 </html>
 ```
 
----
-
-### `AppComponent.render()`
-
-```ts
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = this.render();
-	document.getElementById("root")?.appendChild(this);
-  }
-  render() {
-    return `<slot>Your app goes here</slot>`;
-  }
-}
-```
-
----
-
-### `AppComponent.render(message)`
-
-```ts
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = this.render('Your app goes here');
-	  document.getElementById("root")?.appendChild(this);
-  }
-  render(message) {
-    return `<slot>${message}</slot>`;
-  }
-}
-```
-
----
-
-### `AppComponent.setup()`
-
-```ts
-class AppComponent extends HTMLElement {
-  constructor() {
-    super();
-	  this.setup();
-  }
-  setup() {
-	  this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = this.render('Your app goes here');
-	  document.getElementById("root")?.appendChild(this);
-  }
-  render(message) {
-    return `<slot>${message}</slot>`;
-  }
-}
-```
+## Tips
 
 ---
 

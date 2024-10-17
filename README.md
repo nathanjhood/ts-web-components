@@ -327,6 +327,56 @@ const CustomButton = (): HTMLButtonElement => {
 const customButton = CustomButton();
 ```
 
+---
+
+### passing props
+
+```ts
+type CustomButtonProps = {
+  type: 'submit' | 'reset' | 'button';
+};
+
+const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
+  class CustomButton extends HTMLButtonElement {
+    constructor() {
+      super();
+      this.type = props.type;
+    }
+  }
+  customElements.define('custom-button', CustomButton);
+  return document.createElement<'button'>('button');
+};
+
+const customButton = CustomButton({ type: 'submit' });
+
+```
+
+---
+
+### adding children
+
+```ts
+type CustomButtonProps = {
+  type: 'submit' | 'reset' | 'button';
+  children?: Node;
+};
+
+const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
+  class CustomButton extends HTMLButtonElement {
+    constructor() {
+      super();
+      this.type = props.type;
+      if (props.children) this.appendChild(props.children);
+    }
+  }
+  customElements.define('custom-button', CustomButton);
+  return document.createElement<'button'>('button');
+};
+
+```
+
+---
+
 ## Further Reading
 
 - [eiwenebergeffect @ Medium: Hello Web Components](https://eisenbergeffect.medium.com/hello-web-components-795ed1bd108e)

@@ -29,8 +29,16 @@ const render = <T extends HTMLElement = HTMLElement>(element: () => T) => {
       'href',
       `${env['PUBLIC_URL']}static/css/index.css`
     );
+    // include Tailwind, if you're using it...
+    const twStylesheet = document.createElement('link');
+    twStylesheet.setAttribute('rel', 'stylesheet');
+    twStylesheet.setAttribute(
+      'href',
+      `${env['PUBLIC_URL']}static/css/tailwind.css`
+    );
     // Attach the created elements to the shadow dom
     shadowRoot.appendChild<HTMLLinkElement>(extStylesheet);
+    shadowRoot.appendChild<HTMLLinkElement>(twStylesheet);
     shadowRoot.appendChild<T>(element());
   }
 

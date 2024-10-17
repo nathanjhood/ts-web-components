@@ -314,12 +314,12 @@ const button = Button();
 // example
 
 const CustomButton = (): HTMLButtonElement => {
-  class CustomButton extends HTMLButtonElement {
+  class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
     }
   }
-  customElements.define('custom-button', CustomButton)
+  customElements.define('custom-button', CustomButtonElement)
   return document.createElement<'button'>('button');
 };
 
@@ -337,13 +337,13 @@ type CustomButtonProps = {
 };
 
 const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
-  class CustomButton extends HTMLButtonElement {
+  class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
       this.type = props.type;
     }
   }
-  customElements.define('custom-button', CustomButton);
+  customElements.define('custom-button', CustomButtonElement);
   return document.createElement<'button'>('button');
 };
 
@@ -362,14 +362,14 @@ type CustomButtonProps = {
 };
 
 const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
-  class CustomButton extends HTMLButtonElement {
+  class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
       this.type = props.type;
       if (props.children) this.appendChild(props.children);
     }
   }
-  customElements.define('custom-button', CustomButton);
+  customElements.define('custom-button', CustomButtonElement);
   return document.createElement<'button'>('button');
 };
 
@@ -390,7 +390,7 @@ type CustomButtonProps = {
 };
 
 const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
-  class CustomButton extends HTMLButtonElement {
+  class CustomButtonElement extends HTMLButtonElement {
     constructor() {
       super();
       this.type = props.type;
@@ -398,7 +398,7 @@ const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
       if (props.className) this.className = props.className;
     }
   }
-  customElements.define('custom-button', CustomButton);
+  customElements.define('custom-button', CustomButtonElement);
   return document.createElement<'button'>('button');
 };
 

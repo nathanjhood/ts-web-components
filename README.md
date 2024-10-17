@@ -292,43 +292,44 @@ class AppComponent extends HTMLElement {
 
 ---
 
-_tip:_
+### functional approach
 
 ```ts
-// short
-customElements.define()
-```
+// example:
 
-or...
+const Button = (): HTMLButtonElement => {
+  return document.createElement('button')
+}
 
-```ts
-// fully-qualified
-window.customElements.define()
-```
+// HTMLButtonElement
+const button = Button();
 
----
-
-_tip:_
-
-```ts
-class AppComponent extends HTMLElement {}
-
-customElements.define('app-component', AppComponent);
-```
-
-or...
-
-```ts
-customElements.define('app-component',
-  class AppComponent extends HTMLElement {}
-);
 ```
 
 ---
+
+### factory method
+
+```ts
+// example
+
+const CustomButton = (): HTMLButtonElement => {
+  class CustomButton extends HTMLButtonElement {
+    constructor() {
+      super();
+    }
+  }
+  customElements.define('custom-button', CustomButton)
+  return document.createElement<'button'>('button');
+};
+
+// CustomButtom
+const customButton = CustomButton();
+```
 
 ## Further Reading
 
-- [eienebergeffect @ Medium: Hello Web Components](https://eisenbergeffect.medium.com/hello-web-components-795ed1bd108e)
+- [eiwenebergeffect @ Medium: Hello Web Components](https://eisenbergeffect.medium.com/hello-web-components-795ed1bd108e)
 - [MDN's Web Component examples](https://github.com/mdn/web-components-examples)
 - [MDN's Web API glossary](https://developer.mozilla.org/en-US/docs/Web/API)
 - [MDN's Web API - HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)

@@ -472,6 +472,7 @@ const tailwindButton = CustomButton({
 
 ## Further Reading
 
+- [webcomponents.org](https://www.webcomponents.org/)
 - [eisenebergeffect @ Medium: Hello Web Components](https://eisenbergeffect.medium.com/hello-web-components-795ed1bd108e)
 - [MDN's Web Component examples](https://github.com/mdn/web-components-examples)
 - [MDN's Web API glossary](https://developer.mozilla.org/en-US/docs/Web/API)

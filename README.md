@@ -27,7 +27,9 @@ Powered by Typescript, TailwindCSS, ESBuild, and fast-refreshing development ser
 
 ## How to...
 
-### `serve ./public`
+Step by step!
+
+### `start`
 
 ```sh
 $ git clone git@github.com:nathanjhood/ts-web-components.git
@@ -190,7 +192,7 @@ window.customElements.define('app-component',
       super();
       this.attachShadow({ mode: 'open' });
       this.shadowRoot.innerHTML = `<slot>Your app goes here</slot>`;
-	  document.getElementById("root")?.appendChild(this);
+	    document.getElementById("root")?.appendChild(this);
     }
   }
 );
@@ -257,7 +259,7 @@ class AppComponent extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.innerHTML = this.render('Your app goes here');
-	document.getElementById("root")?.appendChild(this);
+	  document.getElementById("root")?.appendChild(this);
   }
   render(message) {
     return `<slot>${message}</slot>`;
@@ -273,12 +275,12 @@ class AppComponent extends HTMLElement {
 class AppComponent extends HTMLElement {
   constructor() {
     super();
-	this.setup();
+	  this.setup();
   }
   setup() {
-	this.attachShadow({ mode: 'open' });
+	  this.attachShadow({ mode: 'open' });
     this.shadowRoot.innerHTML = this.render('Your app goes here');
-	document.getElementById("root")?.appendChild(this);
+	  document.getElementById("root")?.appendChild(this);
   }
   render(message) {
     return `<slot>${message}</slot>`;

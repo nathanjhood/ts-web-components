@@ -380,6 +380,37 @@ const customButtonB = CustomButton({ type: 'submit', children: customButton });
 
 ---
 
+### adding styles
+
+```ts
+type CustomButtonProps = {
+  type: 'submit' | 'reset' | 'button';
+  children?: Node;
+  className?: string;
+};
+
+const CustomButton = (props: CustomButtonProps): HTMLButtonElement => {
+  class CustomButton extends HTMLButtonElement {
+    constructor() {
+      super();
+      this.type = props.type;
+      if (props.children) this.appendChild(props.children);
+      if (props.className) this.className = props.className;
+    }
+  }
+  customElements.define('custom-button', CustomButton);
+  return document.createElement<'button'>('button');
+};
+
+const tailwindButton = CustomButton({
+  type: 'submit',
+  className: 'flex align-left text-white bg-red-500',
+});
+
+```
+
+---
+
 ## Further Reading
 
 - [eiwenebergeffect @ Medium: Hello Web Components](https://eisenbergeffect.medium.com/hello-web-components-795ed1bd108e)

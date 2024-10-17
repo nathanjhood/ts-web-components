@@ -53,6 +53,8 @@ export NODE_ENV="development"
 
 ```sh
 $ npm run start
+```
+```sh
 # ...
 
 Rebuilding...

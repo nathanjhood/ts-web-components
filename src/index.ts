@@ -1,3 +1,4 @@
+import env = require('env');
 import './index.css';
 import App = require('./App');
 
@@ -18,7 +19,18 @@ const render = <T extends HTMLElement = HTMLElement>(element: () => T) => {
   } else {
     if (element) {
       const el: T = element();
-      root.appendChild<ReturnType<typeof element>>(el);
+
+      const shadowRoot = root.attachShadow({ mode: 'open' });
+      const extStylesheet: HTMLLinkElement =
+        document.createElement<'link'>('link');
+      extStylesheet.setAttribute('rel', 'stylesheet');
+      extStylesheet.setAttribute(
+        'href',
+        `${env['PUBLIC_URL']}static/css/index.css`
+      );
+      // Attach the created elements to the shadow dom
+      shadowRoot.appendChild<HTMLLinkElement>(extStylesheet);
+      shadowRoot.appendChild<ReturnType<typeof element>>(el);
     }
   }
 
@@ -42,4 +54,4 @@ const render = <T extends HTMLElement = HTMLElement>(element: () => T) => {
   }
 };
 
-export = render(App);
+export = render<ReturnType<typeof App>>(App);

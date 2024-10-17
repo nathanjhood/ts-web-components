@@ -1,4 +1,3 @@
-import env from 'env';
 import './App.css';
 import logo = require('./logo.svg');
 
@@ -26,18 +25,7 @@ const App = (): HTMLElement => {
          *
          */
         private setup(): void {
-          const shadowRoot: ShadowRoot = this.attachShadow({ mode: 'open' });
-          shadowRoot.innerHTML = this.render();
-          // Append external stylesheet to the shadow dom
-          const linkElem: HTMLLinkElement =
-            document.createElement<'link'>('link');
-          linkElem.setAttribute('rel', 'stylesheet');
-          linkElem.setAttribute(
-            'href',
-            `${env['PUBLIC_URL']}static/css/index.css`
-          );
-          // Attach the created elements to the shadow dom
-          shadowRoot.appendChild<HTMLLinkElement>(linkElem);
+          this.innerHTML = this.render();
           console.debug('setup()');
         }
         /**
@@ -103,7 +91,7 @@ const App = (): HTMLElement => {
       }
     );
   }
-  return document.createElement('app-component');
+  return document.createElement('app-component') satisfies HTMLElement;
 };
 
 export = App;

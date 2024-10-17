@@ -1,6 +1,7 @@
 {
   "short_name": "Typescript Web Components App",
   "name": "Typescript Web Components App Sample",
+  "id": "/ts-web-components/",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,12 +9,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "static/png/logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "static/png/logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

@@ -29,7 +29,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/ts-web-components/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"

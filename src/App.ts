@@ -103,7 +103,7 @@ const App = (): HTMLElement => {
     alt="logo"
   />
   <p>
-    Edit <code>src/App.ts</code> and save to reload.
+    Edit <code class="bg-neutral-500 rounded">src/App.ts</code> and save to reload.
   </p>
   <a
     class="App-link"
